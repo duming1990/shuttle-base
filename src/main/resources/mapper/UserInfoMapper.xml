@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shuttle.base.dao.UserInfoDao">
+
+    <resultMap id="userInfoResultForList" type="com.shuttle.base.bean.UserInfo">
+        <result column="ID" property="id" jdbcType="INTEGER"/>
+        <result column="NAME" property="name" jdbcType="VARCHAR"/>
+        <result column="SEX" property="sex" jdbcType="INTEGER"/>
+        <result column="AGE" property="age" jdbcType="INTEGER"/>
+        <result column="PASSWORD" property="password" jdbcType="VARCHAR"/>
+        <result column="NO" property="no" jdbcType="VARCHAR"/>
+        <result column="ADD_DATE" property="add_date" jdbcType="TIMESTAMP"/>
+        <result column="ROLES" property="roles" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="userInfoResult" extends="userInfoResultForList" type="com.shuttle.base.bean.UserInfo"></resultMap>
+
+
+    <sql id="sq-userInfo">
+		a.ID,
+		a.NAME,
+		a.SEX,
+		a.AGE,
+		a.NO,
+		a.PASSWORD,
+		a.ADD_DATE,
+		a.ROLES
+	</sql>
+
+    <sql id="sf-userInfo">
+        <if test="id != null and id != ''">AND a.ID = #{id}</if>
+        <if test="name != null and name != ''">AND a.NAME = #{name}</if>
+        <if test="sex != null and sex != ''">AND a.SEX = #{sex}</if>
+        <if test="age != null and age != ''">AND a.AGE = #{age}</if>
+        <if test="no != null and no != ''">AND a.NO = #{no}</if>
+        <if test="password != null and password != ''">AND a.PASSWORD = #{password}</if>
+        <if test="add_date != null">AND a.ADD_DATE = #{add_date}</if>
+    </sql>
+
+    <select id="selectEntity" resultMap="userInfoResult">
+        select
+        <include refid="sq-userInfo"/>
+        from user_info a where 1 = 1
+        <include refid="sf-userInfo"/>
+    </select>
+
+    <select id="selectEntityList" resultMap="userInfoResultForList">
+        select
+        <include refid="sq-userInfo"/>
+        from user_info a where 1 = 1
+        <include refid="sf-userInfo"/>
+        order by a.ID desc
+        <if test="row.count != null and row.count != ''">limit 0, ${row.count}</if>
+    </select>
+
+    <select id="selectEntityCount" resultType="int">
+        select count(*) from user_info a where 1 = 1
+        <include refid="sf-userInfo"/>
+    </select>
+
+    <select id="selectEntityPaginatedList" resultMap="userInfoResult">
+        select
+        <include refid="sq-userInfo"/>
+        from user_info a where 1 = 1
+        <include refid="sf-userInfo"/>
+        order by a.ID desc
+        <if test="row.count != null and row.count != ''">limit ${row.first}, ${row.count}</if>
+    </select>
+
+    <insert id="insertEntity" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[insert into user_info (]]>
+        <trim suffixOverrides=",">
+            <if test="id != null">ID,</if>
+            <if test="name != null">NAME,</if>
+            <if test="sex != null">SEX,</if>
+            <if test="age != null">AGE,</if>
+            <if test="no != null">NO,</if>
+            <if test="password != null">PASSWORD,</if>
+            <if test="add_date != null">ADD_DATE,</if>
+        </trim>
+        <![CDATA[) values (]]>
+        <trim suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null">#{name},</if>
+            <if test="sex != null">#{sex},</if>
+            <if test="age != null">#{age},</if>
+            <if test="no != null">#{no},</if>
+            <if test="password != null">#{password},</if>
+            <if test="add_date != null">#{add_date},</if>
+        </trim>
+        <![CDATA[)]]>
+    </insert>
+
+    <update id="updateEntity">
+        update user_info
+        <set>
+            <if test="id != null">ID = #{id},</if>
+            <if test="user_name != null">USER_NAME = #{user_name},</if>
+            <if test="real_name != null">REAL_NAME = #{real_name},</if>
+            <if test="user_type != null">USER_TYPE = #{user_type},</if>
+            <if test="user_level != null">USER_LEVEL = #{user_level},</if>
+            <if test="password != null">PASSWORD = #{password},</if>
+            <if test="add_date != null">ADD_DATE = #{add_date},</if>
+        </set>
+        <where>
+            <if test="id != null">ID = #{id}</if>
+
+            <if test="map.pks != null">
+                ID in
+                <foreach collection="map.pks" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <delete id="deleteEntity">
+        delete from user_info where 1 = 1
+        <if test="id != null">AND ID = #{id}</if>
+        <if test="map.pks != null">
+            AND ID in
+            <foreach collection="map.pks" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </delete>
+</mapper>
