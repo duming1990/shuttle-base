@@ -20,7 +20,11 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.formLogin() // 表单登录
+    // 添加JWT filter
+    http.addFilterBefore(
+            new JWTAuthorizationFilter(authenticationManager()),
+            UsernamePasswordAuthenticationFilter.class) // 添加验证码校验过滤器
+            .formLogin() // 表单登录
         .loginPage("/authentication/require")
         .loginProcessingUrl("/login")
         .successHandler(authenticationSucessHandler) // 处理登录成功
@@ -35,10 +39,6 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
         .csrf()
         .disable();
 
-    // 添加JWT filter
-    http.addFilterBefore(
-        new JWTAuthorizationFilter(authenticationManager()),
-        UsernamePasswordAuthenticationFilter.class);
     // 禁用缓存
     http.headers().cacheControl();
   }
